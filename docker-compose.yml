@@ -1,11 +1,11 @@
 services:
-  # Python Template Server
-  python-template-server:
-    image: ${IMAGE:-ghcr.io/javidahmed64592/python-template-server:latest}
+  # Python Clipboard Share
+  python-clipboard-share:
+    # image: ${IMAGE:-ghcr.io/javidahmed64592/python-clipboard-share:latest}
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: python-template-server
+    container_name: python-clipboard-share
     ports:
       - "${PORT:-443}:${PORT:-443}"
     environment:
