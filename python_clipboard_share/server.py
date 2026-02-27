@@ -1,0 +1,132 @@
+"""Template FastAPI server module."""
+
+import logging
+from pathlib import Path
+from typing import Any
+
+from fastapi import HTTPException, Request
+from python_template_server.models import ResponseCode
+from python_template_server.template_server import TemplateServer
+
+from python_clipboard_share.models import (
+    AddEntryRequest,
+    AddEntryResponse,
+    ClipboardHistoryArchive,
+    ClipboardHistoryEntry,
+    ClipboardServerConfig,
+    DeleteEntryRequest,
+    DeleteEntryResponse,
+    GetHistoryResponse,
+    ModifyEntryRequest,
+    ModifyEntryResponse,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class ClipboardServer(TemplateServer):
+    """Clipboard FastAPI server."""
+
+    def __init__(self, config: ClipboardServerConfig | None = None) -> None:
+        """Initialize the ClipboardServer.
+
+        :param ClipboardServerConfig | None config: Optional pre-loaded configuration
+        """
+        self.config: ClipboardServerConfig
+        super().__init__(
+            package_name="python_clipboard_server",
+            config=config,
+        )
+
+        self._clipboard_history = ClipboardHistoryArchive.load_from_file(self.archive_file)
+
+    @property
+    def archive_file(self) -> Path:
+        """Get the full path to the clipboard history archive file."""
+        return self.config.archive_directory / self.config.archive_filename
+
+    def validate_config(self, config_data: dict[str, Any]) -> ClipboardServerConfig:
+        """Validate configuration data against the ClipboardServerConfig model.
+
+        :param dict config_data: The configuration data to validate
+        :return ClipboardServerConfig: The validated configuration model
+        :raise ValidationError: If the configuration data is invalid
+        """
+        return ClipboardServerConfig.model_validate(config_data)
+
+    def setup_routes(self) -> None:
+        """Add custom API routes."""
+        pass
+
+    async def get_history(self, request: Request) -> GetHistoryResponse:
+        """Get clipboard history.
+
+        :param Request request: The incoming HTTP request
+        :return GetHistoryResponse: Clipboard history response
+        :raise HTTPException: If the server token is not configured
+        """
+        return GetHistoryResponse(
+            message="Clipboard history retrieved successfully",
+            timestamp=GetHistoryResponse.current_timestamp(),
+            history=self._clipboard_history,
+        )
+
+    async def add_entry(self, request: Request, body: AddEntryRequest) -> AddEntryResponse:
+        """Add a new entry to the clipboard history.
+
+        :param Request request: The incoming HTTP request
+        :param AddEntryRequest body: The request body containing entry details
+        :return AddEntryResponse: Response containing the ID of the added entry
+        :raise HTTPException: If the server token is not configured
+        """
+        new_entry = ClipboardHistoryEntry.new_entry(
+            title=body.title,
+            content=body.content,
+        )
+        self._clipboard_history.add_entry(new_entry)
+        self._clipboard_history.save_to_file(self.archive_file)
+        return AddEntryResponse(
+            message="Clipboard entry added successfully",
+            timestamp=AddEntryResponse.current_timestamp(),
+            id=new_entry.id,
+        )
+
+    async def delete_entry(self, request: Request, body: DeleteEntryRequest) -> DeleteEntryResponse:
+        """Delete an entry from the clipboard history.
+
+        :param Request request: The incoming HTTP request
+        :param DeleteEntryRequest body: The request body containing the ID of the entry to delete
+        :return DeleteEntryResponse: Response containing the ID of the deleted entry
+        :raise HTTPException: If the server token is not configured or if the entry is not found
+        """
+        success = self._clipboard_history.delete_entry(body.id)
+        if not success:
+            raise HTTPException(status_code=ResponseCode.NOT_FOUND, detail="Clipboard entry not found")
+        self._clipboard_history.save_to_file(self.archive_file)
+        return DeleteEntryResponse(
+            message="Clipboard entry deleted successfully",
+            timestamp=DeleteEntryResponse.current_timestamp(),
+            id=body.id,
+        )
+
+    async def modify_entry(self, request: Request, body: ModifyEntryRequest) -> ModifyEntryResponse:
+        """Modify an existing entry in the clipboard history.
+
+        :param Request request: The incoming HTTP request
+        :param ModifyEntryRequest body: The request body containing the ID and new details of the entry to modify
+        :return ModifyEntryResponse: Response containing the ID of the modified entry
+        :raise HTTPException: If the server token is not configured or if the entry is not found
+        """
+        success = self._clipboard_history.modify_entry(
+            id=body.id,
+            title=body.title,
+            content=body.content,
+        )
+        if not success:
+            raise HTTPException(status_code=ResponseCode.NOT_FOUND, detail="Clipboard entry not found")
+        self._clipboard_history.save_to_file(self.archive_file)
+        return ModifyEntryResponse(
+            message="Clipboard entry modified successfully",
+            timestamp=ModifyEntryResponse.current_timestamp(),
+            id=body.id,
+        )
