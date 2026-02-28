@@ -11,12 +11,22 @@ from python_template_server.models import BaseResponse, TemplateServerConfig
 
 
 # Clipboard Server Configuration Models
+class ClipboardArchiveConfig(BaseModel):
+    """Configuration for clipboard archive storage."""
+
+    archive_directory: Path = Field(default="archive", description="Directory to store clipboard history archives")
+    archive_filename: str = Field(default="archive.json", description="Filename for clipboard history archive")
+    max_clipboard_history: int = Field(
+        default=20, ge=1, le=100, description="Maximum number of clipboard history entries to keep"
+    )
+
+
 class ClipboardServerConfig(TemplateServerConfig):
     """Clipboard server configuration."""
 
-    archive_directory: Path = Field(..., description="Directory to store clipboard history archives")
-    archive_filename: str = Field(..., description="Filename for clipboard history archive")
-    max_clipboard_history: int = Field(..., description="Maximum number of clipboard history entries to keep")
+    archive_config: ClipboardArchiveConfig = Field(
+        default_factory=ClipboardArchiveConfig, description="Configuration for clipboard archive storage"
+    )
 
 
 # Archive Models

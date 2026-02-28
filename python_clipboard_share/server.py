@@ -38,12 +38,15 @@ class ClipboardServer(TemplateServer):
             config=config,
         )
 
+        if not self.archive_file.parent.exists():
+            self.archive_file.parent.mkdir(parents=True, exist_ok=True)
+
         self._clipboard_history = ClipboardHistoryArchive.load_from_file(self.archive_file)
 
     @property
     def archive_file(self) -> Path:
         """Get the full path to the clipboard history archive file."""
-        return self.config.archive_directory / self.config.archive_filename
+        return self.config.archive_config.archive_directory / self.config.archive_config.archive_filename
 
     def validate_config(self, config_data: dict[str, Any]) -> ClipboardServerConfig:
         """Validate configuration data against the ClipboardServerConfig model.
@@ -56,7 +59,34 @@ class ClipboardServer(TemplateServer):
 
     def setup_routes(self) -> None:
         """Add custom API routes."""
-        pass
+        self.add_authenticated_route(
+            endpoint="/clipboard/history",
+            handler_function=self.get_history,
+            response_model=GetHistoryResponse,
+            methods=["GET"],
+            limited=True,
+        )
+        self.add_authenticated_route(
+            endpoint="/clipboard/add",
+            handler_function=self.add_entry,
+            response_model=AddEntryResponse,
+            methods=["POST"],
+            limited=True,
+        )
+        self.add_authenticated_route(
+            endpoint="/clipboard/delete",
+            handler_function=self.delete_entry,
+            response_model=DeleteEntryResponse,
+            methods=["POST"],
+            limited=True,
+        )
+        self.add_authenticated_route(
+            endpoint="/clipboard/modify",
+            handler_function=self.modify_entry,
+            response_model=ModifyEntryResponse,
+            methods=["POST"],
+            limited=True,
+        )
 
     async def get_history(self, request: Request) -> GetHistoryResponse:
         """Get clipboard history.
