@@ -57,6 +57,14 @@ docker-compose.yml
 # Tests
 tests/
 
+# Frontend build artifacts
+python-clipboard-share-frontend/node_modules/
+python-clipboard-share-frontend/.next/
+python-clipboard-share-frontend/out/
+
+# Static files (built in Docker)
+static/
+
 # Miscellaneous
 .DS_Store
 *.bak

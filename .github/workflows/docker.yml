@@ -165,9 +165,9 @@ jobs:
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Python Template Server v${{ steps.get_version.outputs.version }}
+          ## Python Clipboard Share v${{ steps.get_version.outputs.version }}
 
-          **A template FastAPI server with production-ready configuration.**
+          **A lightweight FastAPI application to share text across devices.**
 
           ### Quick Start
 
@@ -186,6 +186,7 @@ jobs:
 
           ### Access Points
 
+          - **Web Application**: https://localhost:443
           - **API Server**: https://localhost:443/api
           - **Swagger UI**: https://localhost:443/api/docs
           - **ReDoc**: https://localhost:443/api/redoc
