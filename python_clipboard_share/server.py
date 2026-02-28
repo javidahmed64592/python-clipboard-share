@@ -129,7 +129,7 @@ class ClipboardServer(TemplateServer):
         :return DeleteEntryResponse: Response containing the ID of the deleted entry
         :raise HTTPException: If the server token is not configured or if the entry is not found
         """
-        success = self._clipboard_history.delete_entry(body.id)
+        success = self._clipboard_history.delete_entry(entry_id=body.id)
         if not success:
             raise HTTPException(status_code=ResponseCode.NOT_FOUND, detail="Clipboard entry not found")
         self._clipboard_history.save_to_file(self.archive_file)
@@ -148,7 +148,7 @@ class ClipboardServer(TemplateServer):
         :raise HTTPException: If the server token is not configured or if the entry is not found
         """
         success = self._clipboard_history.modify_entry(
-            id=body.id,
+            entry_id=body.id,
             title=body.title,
             content=body.content,
         )
