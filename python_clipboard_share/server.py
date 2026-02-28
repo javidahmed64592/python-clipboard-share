@@ -34,7 +34,7 @@ class ClipboardServer(TemplateServer):
         """
         self.config: ClipboardServerConfig
         super().__init__(
-            package_name="python_clipboard_server",
+            package_name="python_clipboard_share",
             config=config,
         )
 
