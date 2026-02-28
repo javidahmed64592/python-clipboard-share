@@ -1,4 +1,4 @@
-"""Unit tests for the pi_dashboard.main module."""
+"""Unit tests for the python_clipboard_share.main module."""
 
 from collections.abc import Generator
 from unittest.mock import MagicMock, patch

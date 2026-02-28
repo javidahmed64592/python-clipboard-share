@@ -9,9 +9,9 @@ runs:
       with:
         node-version: "22"
         cache: "npm"
-        cache-dependency-path: pi-dashboard-frontend/package-lock.json
+        cache-dependency-path: python-clipboard-share-frontend/package-lock.json
     - name: Install dependencies
       shell: bash
       run: |
-        cd pi-dashboard-frontend
+        cd python-clipboard-share-frontend
         npm ci

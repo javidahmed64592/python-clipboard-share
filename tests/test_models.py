@@ -1,4 +1,4 @@
-"""Unit tests for the python_template_server.models module."""
+"""Unit tests for the python_clipboard_share.models module."""
 
 from python_clipboard_share.models import (
     AddEntryRequest,

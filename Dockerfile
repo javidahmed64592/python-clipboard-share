@@ -1,6 +1,6 @@
-# Multi-stage Dockerfile for Pi Dashboard
+# Multi-stage Dockerfile for Python Clipboard Share
 # Stage 1: Frontend build stage - build Next.js static export
-FROM node:26-alpine AS frontend-builder
+FROM node:25-alpine AS frontend-builder
 
 WORKDIR /frontend
 
@@ -81,7 +81,7 @@ RUN echo '#!/bin/sh\n\
     export $(grep -v "^#" .env | xargs)\n\
     fi\n\
     \n\
-    exec pi-dashboard' > /app/start.sh && \
+    exec python-clipboard-share' > /app/start.sh && \
     chmod +x /app/start.sh
 
 # Expose server port
