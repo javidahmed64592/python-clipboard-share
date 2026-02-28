@@ -948,6 +948,26 @@ wheels = [
 ]
 
 [[package]]
+name = "python-clipboard-share"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "python-template-server" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "python-template-server", extra = ["dev"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "python-template-server", git = "https://github.com/javidahmed64592/python-template-server.git" },
+    { name = "python-template-server", extras = ["dev"], marker = "extra == 'dev'", git = "https://github.com/javidahmed64592/python-template-server.git" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "python-dotenv"
 version = "1.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -968,7 +988,7 @@ wheels = [
 [[package]]
 name = "python-template-server"
 version = "0.1.1"
-source = { editable = "." }
+source = { git = "https://github.com/javidahmed64592/python-template-server.git#b51d444c8cc5fcee2b8fcad86d7af65678973bd8" }
 dependencies = [
     { name = "cryptography" },
     { name = "fastapi" },
@@ -987,23 +1007,6 @@ dev = [
     { name = "pytest-env" },
     { name = "template-python", extra = ["dev"] },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "cryptography", specifier = ">=46.0.5" },
-    { name = "fastapi", specifier = ">=0.129.0" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "pyhere", specifier = ">=1.0.3" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.2.0" },
-    { name = "pytest-env", marker = "extra == 'dev'", specifier = ">=1.5.0" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "python-multipart", specifier = ">=0.0.21" },
-    { name = "slowapi", specifier = ">=0.1.9" },
-    { name = "template-python", extras = ["dev"], marker = "extra == 'dev'", git = "https://github.com/javidahmed64592/template-python.git" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.41.0" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "pyyaml"

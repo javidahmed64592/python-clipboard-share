@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "python-template-server"
-version = "0.1.1"
-description = "A template FastAPI server with production-ready configuration."
+name = "python-clipboard-share"
+version = "0.1.0"
+description = "A lightweight FastAPI application to share text across devices."
 readme = "README.md"
 requires-python = ">=3.13"
 license = { file = "LICENSE" }
@@ -18,37 +18,26 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "cryptography>=46.0.5",
-    "fastapi>=0.129.0",
-    "httpx>=0.28.1",
-    "pydantic>=2.12.5",
-    "pyhere>=1.0.3",
-    "python-dotenv>=1.2.1",
-    "python-multipart>=0.0.21",
-    "slowapi>=0.1.9",
-    "uvicorn[standard]>=0.41.0",
+    "python-template-server @ git+https://github.com/javidahmed64592/python-template-server.git",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "template-python[dev] @ git+https://github.com/javidahmed64592/template-python.git",
-    "pytest-asyncio>=1.2.0",
-    "pytest-env>=1.5.0",
+    "python-template-server[dev] @ git+https://github.com/javidahmed64592/python-template-server.git",
 ]
 
 [project.urls]
-repository = "https://github.com/javidahmed64592/python-template-server"
+repository = "https://github.com/javidahmed64592/python-clipboard-share"
 
 [project.scripts]
-python-template-server = "python_template_server.main:run"
-generate-new-token = "python_template_server.authentication_handler:generate_new_token"
+python-clipboard-share = "python_clipboard_share.main:run"
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build]
 include = [
-  "python_template_server/**",
+  "python_clipboard_share/**",
   ".here",
 ]
 
@@ -65,7 +54,7 @@ env = [
 
 [tool.coverage.run]
 branch = true
-source = ["python_template_server", "tests"]
+source = ["python_clipboard_share", "tests"]
 
 [tool.coverage.report]
 fail_under = 80
@@ -174,6 +163,6 @@ pretty = true
 
 [[tool.mypy.overrides]]
 module = [
-    "pyhere.*"
+    "python_template_server.*"
 ]
 ignore_missing_imports = true

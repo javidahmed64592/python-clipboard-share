@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  PACKAGE_NAME: python_template_server
+  PACKAGE_NAME: python_clipboard_share
 
 jobs:
   validate-pyproject:
