@@ -55,7 +55,7 @@ class ClipboardServer(TemplateServer):
         :return ClipboardServerConfig: The validated configuration model
         :raise ValidationError: If the configuration data is invalid
         """
-        return ClipboardServerConfig.model_validate(config_data)
+        return ClipboardServerConfig.model_validate(config_data)  # type: ignore[no-any-return]
 
     def setup_routes(self) -> None:
         """Add custom API routes."""

@@ -14,7 +14,9 @@ from python_template_server.models import BaseResponse, TemplateServerConfig
 class ClipboardArchiveConfig(BaseModel):
     """Configuration for clipboard archive storage."""
 
-    archive_directory: Path = Field(default="archive", description="Directory to store clipboard history archives")
+    archive_directory: Path = Field(
+        default=Path("archive"), description="Directory to store clipboard history archives"
+    )
     archive_filename: str = Field(default="archive.json", description="Filename for clipboard history archive")
     max_clipboard_history: int = Field(
         default=20, ge=1, le=100, description="Maximum number of clipboard history entries to keep"
