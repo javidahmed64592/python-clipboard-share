@@ -1,7 +1,7 @@
 services:
   # Python Clipboard Share
   python-clipboard-share:
-    # image: ${IMAGE:-ghcr.io/javidahmed64592/python-clipboard-share:latest}
+    image: ${IMAGE:-ghcr.io/javidahmed64592/python-clipboard-share:latest}
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,6 +17,7 @@ services:
       - ./.env:/app/.env
       - certs:/app/certs
       - logs:/app/logs
+      - archive:/app/archive
     restart: unless-stopped
     healthcheck:
       test:
@@ -34,3 +35,4 @@ services:
 volumes:
   certs:
   logs:
+  archive:

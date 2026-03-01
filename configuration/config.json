@@ -28,5 +28,10 @@
     "allow_nan": false,
     "indent": null,
     "media_type": "application/json; charset=utf-8"
+  },
+  "archive_config": {
+    "archive_directory": "archive",
+    "archive_filename": "archive.json",
+    "max_clipboard_history": 50
   }
 }
