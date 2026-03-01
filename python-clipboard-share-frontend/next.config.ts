@@ -17,7 +17,7 @@ const getBackendURL = () => {
       __dirname,
       "..",
       "configuration",
-      "config.json"
+      "config.json",
     );
     const configData = fs.readFileSync(configPath, "utf-8");
     const config: BackendConfig = JSON.parse(configData);
