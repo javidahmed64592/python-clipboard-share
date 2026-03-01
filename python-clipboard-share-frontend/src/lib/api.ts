@@ -2,7 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 import { getApiKey } from "@/lib/auth";
-import type { HealthResponse, LoginResponse } from "@/lib/types";
+import type {
+  AddEntryResponse,
+  DeleteEntryResponse,
+  GetHistoryResponse,
+  HealthResponse,
+  LoginResponse,
+  ModifyEntryResponse,
+} from "@/lib/types";
 
 // Determine the base URL based on environment
 const getBaseURL = () => {
@@ -124,5 +131,59 @@ export function useHealthStatus(): HealthStatus {
 
   return status;
 }
+
+export const getClipboardHistory = async (): Promise<GetHistoryResponse> => {
+  try {
+    const response = await api.get<GetHistoryResponse>("/clipboard/history");
+    return response.data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const addClipboardEntry = async (
+  title: string,
+  content: string,
+): Promise<AddEntryResponse> => {
+  try {
+    const response = await api.post<AddEntryResponse>("/clipboard/add", {
+      title,
+      content,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const deleteClipboardEntry = async (
+  id: string,
+): Promise<DeleteEntryResponse> => {
+  try {
+    const response = await api.post<DeleteEntryResponse>("/clipboard/delete", {
+      id,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
+
+export const modifyClipboardEntry = async (
+  id: string,
+  title: string,
+  content: string,
+): Promise<ModifyEntryResponse> => {
+  try {
+    const response = await api.post<ModifyEntryResponse>("/clipboard/modify", {
+      id,
+      title,
+      content,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+};
 
 export default api;

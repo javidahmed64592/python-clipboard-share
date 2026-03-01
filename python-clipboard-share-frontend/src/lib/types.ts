@@ -31,7 +31,7 @@ export interface HealthResponse extends BaseResponse {}
 export interface LoginResponse extends BaseResponse {}
 
 export interface GetHistoryResponse extends BaseResponse {
-  history: ClipboardHistoryEntry[];
+  history: ClipboardHistoryArchive;
 }
 
 export interface AddEntryResponse extends BaseResponse {
