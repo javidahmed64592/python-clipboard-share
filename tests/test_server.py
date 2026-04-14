@@ -1,4 +1,4 @@
-"""Unit tests for the python_clipboard_share.template_server module."""
+"""Unit tests for the python_clipboard_share.server module."""
 
 from __future__ import annotations
 
