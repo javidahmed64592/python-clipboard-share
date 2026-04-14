@@ -1,4 +1,4 @@
-"""Template FastAPI server module."""
+"""FastAPI server module for clipboard sharing."""
 
 import logging
 from pathlib import Path
@@ -34,7 +34,7 @@ class ClipboardServer(TemplateServer):
         """
         self.config: ClipboardServerConfig
         super().__init__(
-            package_name="python_clipboard_share",
+            package_name="python-clipboard-share",
             config=config,
         )
 
