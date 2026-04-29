@@ -64,18 +64,16 @@ class ClipboardHistoryArchive(BaseModel):
         """Load clipboard history archive from a JSON file."""
         if not file_path.exists():
             return cls(entries=[])
-        with file_path.open(encoding="utf-8") as f:
-            data = json.load(f)
-        return cls(**data)
+
+        data = file_path.read_text(encoding="utf-8")
+        return cls.model_validate(json.loads(data))
 
     def save_to_file(self, file_path: Path) -> None:
         """Save clipboard history archive to a JSON file."""
         tmp_file_path = file_path.with_suffix(".tmp")
 
         try:
-            with tmp_file_path.open("w", encoding="utf-8") as f:
-                json.dump(self.model_dump(), f, ensure_ascii=False, indent=4)
-
+            tmp_file_path.write_text(json.dumps(self.model_dump(), indent=4), encoding="utf-8")
             tmp_file_path.replace(file_path)
         except Exception:
             if tmp_file_path.exists():
