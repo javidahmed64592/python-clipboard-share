@@ -95,7 +95,6 @@ class ClipboardServer(TemplateServer):
 
         :param Request request: The incoming HTTP request
         :return GetHistoryResponse: Clipboard history response
-        :raise HTTPException: If the server token is not configured
         """
         logger.info("Retrieving clipboard history, total entries: %d", len(self._clipboard_history.entries))
         return GetHistoryResponse(
@@ -109,7 +108,6 @@ class ClipboardServer(TemplateServer):
         :param Request request: The incoming HTTP request
         :param AddEntryRequest body: The request body containing entry details
         :return AddEntryResponse: Response containing the ID of the added entry
-        :raise HTTPException: If the server token is not configured
         """
         new_entry = ClipboardHistoryEntry.new_entry(
             title=body.title,
@@ -129,7 +127,7 @@ class ClipboardServer(TemplateServer):
         :param Request request: The incoming HTTP request
         :param DeleteEntryRequest body: The request body containing the ID of the entry to delete
         :return DeleteEntryResponse: Response containing the ID of the deleted entry
-        :raise HTTPException: If the server token is not configured or if the entry is not found
+        :raise HTTPException: If the entry is not found
         """
         success = self._clipboard_history.delete_entry(entry_id=body.id)
         if not success:
@@ -149,7 +147,7 @@ class ClipboardServer(TemplateServer):
         :param Request request: The incoming HTTP request
         :param ModifyEntryRequest body: The request body containing the ID and new details of the entry to modify
         :return ModifyEntryResponse: Response containing the ID of the modified entry
-        :raise HTTPException: If the server token is not configured or if the entry is not found
+        :raise HTTPException: If the entry is not found
         """
         success = self._clipboard_history.modify_entry(
             entry_id=body.id,
