@@ -139,22 +139,20 @@ class TestAddClipboardEntryEndpoint:
     """Integration tests for the /clipboard/add endpoint."""
 
     @pytest.fixture
-    def mock_add_entry_request(self) -> AddEntryRequest:
+    def mock_request_body(self) -> AddEntryRequest:
         """Provide a mock AddEntryRequest instance."""
         return AddEntryRequest(title="Test Entry", content="This is a test clipboard entry.")
 
-    def test_add_entry(self, mock_server: ClipboardServer, mock_add_entry_request: AddEntryRequest) -> None:
+    def test_add_entry(self, mock_server: ClipboardServer, mock_request_body: AddEntryRequest) -> None:
         """Test the /clipboard/add endpoint method."""
         request = MagicMock()
-        response = asyncio.run(mock_server.add_entry(request, mock_add_entry_request))
+        response = asyncio.run(mock_server.add_entry(request, mock_request_body))
         assert response.message == "Clipboard entry added successfully"
         assert isinstance(response.id, str)
 
-    def test_add_clipboard_entry_endpoint(
-        self, mock_client: TestClient, mock_add_entry_request: AddEntryRequest
-    ) -> None:
+    def test_add_clipboard_entry_endpoint(self, mock_client: TestClient, mock_request_body: AddEntryRequest) -> None:
         """Test /clipboard/add endpoint returns 200."""
-        response = mock_client.post("/clipboard/add", json=mock_add_entry_request.model_dump())
+        response = mock_client.post("/clipboard/add", json=mock_request_body.model_dump())
         assert response.status_code == ResponseCode.OK
 
 
@@ -162,31 +160,29 @@ class TestDeleteClipboardEntryEndpoint:
     """Integration tests for the /clipboard/delete endpoint."""
 
     @pytest.fixture
-    def mock_delete_entry_request(self, mock_clipboard_history_entry: ClipboardHistoryEntry) -> DeleteEntryRequest:
+    def mock_request_body(self, mock_clipboard_history_entry: ClipboardHistoryEntry) -> DeleteEntryRequest:
         """Provide a mock DeleteEntryRequest instance."""
         return DeleteEntryRequest(id=mock_clipboard_history_entry.id)
 
-    def test_delete_entry(self, mock_server: ClipboardServer, mock_delete_entry_request: DeleteEntryRequest) -> None:
+    def test_delete_entry(self, mock_server: ClipboardServer, mock_request_body: DeleteEntryRequest) -> None:
         """Test the /clipboard/delete endpoint method."""
         request = MagicMock()
-        response = asyncio.run(mock_server.delete_entry(request, mock_delete_entry_request))
+        response = asyncio.run(mock_server.delete_entry(request, mock_request_body))
         assert response.message == "Clipboard entry deleted successfully"
-        assert response.id == mock_delete_entry_request.id
+        assert response.id == mock_request_body.id
 
-    def test_delete_entry_not_found(
-        self, mock_server: ClipboardServer, mock_delete_entry_request: DeleteEntryRequest
-    ) -> None:
+    def test_delete_entry_not_found(self, mock_server: ClipboardServer, mock_request_body: DeleteEntryRequest) -> None:
         """Test the /clipboard/delete endpoint method when the entry is not found."""
         request = MagicMock()
-        mock_delete_entry_request.id = "non-existent-id"
+        mock_request_body.id = "non-existent-id"
         with pytest.raises(HTTPException, match=r"Clipboard entry not found"):
-            asyncio.run(mock_server.delete_entry(request, mock_delete_entry_request))
+            asyncio.run(mock_server.delete_entry(request, mock_request_body))
 
     def test_delete_clipboard_entry_endpoint(
-        self, mock_client: TestClient, mock_delete_entry_request: DeleteEntryRequest
+        self, mock_client: TestClient, mock_request_body: DeleteEntryRequest
     ) -> None:
         """Test /clipboard/delete endpoint returns 200."""
-        response = mock_client.post("/clipboard/delete", json=mock_delete_entry_request.model_dump())
+        response = mock_client.post("/clipboard/delete", json=mock_request_body.model_dump())
         assert response.status_code == ResponseCode.OK
 
 
@@ -194,7 +190,7 @@ class TestModifyClipboardEntryEndpoint:
     """Integration tests for the /clipboard/modify endpoint."""
 
     @pytest.fixture
-    def mock_modify_entry_request(self, mock_clipboard_history_entry: ClipboardHistoryEntry) -> ModifyEntryRequest:
+    def mock_request_body(self, mock_clipboard_history_entry: ClipboardHistoryEntry) -> ModifyEntryRequest:
         """Provide a mock ModifyEntryRequest instance."""
         return ModifyEntryRequest(
             id=mock_clipboard_history_entry.id,
@@ -202,25 +198,23 @@ class TestModifyClipboardEntryEndpoint:
             content="Modified content for the clipboard entry.",
         )
 
-    def test_modify_entry(self, mock_server: ClipboardServer, mock_modify_entry_request: ModifyEntryRequest) -> None:
+    def test_modify_entry(self, mock_server: ClipboardServer, mock_request_body: ModifyEntryRequest) -> None:
         """Test the /clipboard/modify endpoint method."""
         request = MagicMock()
-        response = asyncio.run(mock_server.modify_entry(request, mock_modify_entry_request))
+        response = asyncio.run(mock_server.modify_entry(request, mock_request_body))
         assert response.message == "Clipboard entry modified successfully"
-        assert response.id == mock_modify_entry_request.id
+        assert response.id == mock_request_body.id
 
-    def test_modify_entry_not_found(
-        self, mock_server: ClipboardServer, mock_modify_entry_request: ModifyEntryRequest
-    ) -> None:
+    def test_modify_entry_not_found(self, mock_server: ClipboardServer, mock_request_body: ModifyEntryRequest) -> None:
         """Test the /clipboard/modify endpoint method when the entry is not found."""
         request = MagicMock()
-        mock_modify_entry_request.id = "non-existent-id"
+        mock_request_body.id = "non-existent-id"
         with pytest.raises(HTTPException, match=r"Clipboard entry not found"):
-            asyncio.run(mock_server.modify_entry(request, mock_modify_entry_request))
+            asyncio.run(mock_server.modify_entry(request, mock_request_body))
 
     def test_modify_clipboard_entry_endpoint(
-        self, mock_client: TestClient, mock_modify_entry_request: ModifyEntryRequest
+        self, mock_client: TestClient, mock_request_body: ModifyEntryRequest
     ) -> None:
         """Test /clipboard/modify endpoint returns 200."""
-        response = mock_client.post("/clipboard/modify", json=mock_modify_entry_request.model_dump())
+        response = mock_client.post("/clipboard/modify", json=mock_request_body.model_dump())
         assert response.status_code == ResponseCode.OK
