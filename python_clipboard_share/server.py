@@ -38,10 +38,9 @@ class ClipboardServer(TemplateServer):
             config=config,
         )
 
-        if not self.archive_file.parent.exists():
-            self.archive_file.parent.mkdir(parents=True, exist_ok=True)
-
-        self._clipboard_history = ClipboardHistoryArchive.load_from_file(self.archive_file)
+        logger.info("Initializing ClipboardServer with history file: %s", self.archive_file)
+        self.archive_file.parent.mkdir(parents=True, exist_ok=True)
+        self._clipboard_history = ClipboardHistoryArchive.load_from_file(file_path=self.archive_file)
 
     @property
     def archive_file(self) -> Path:
@@ -53,7 +52,6 @@ class ClipboardServer(TemplateServer):
 
         :param dict config_data: The configuration data to validate
         :return ClipboardServerConfig: The validated configuration model
-        :raise ValidationError: If the configuration data is invalid
         """
         return ClipboardServerConfig.model_validate(config_data)  # type: ignore[no-any-return]
 
@@ -88,6 +86,10 @@ class ClipboardServer(TemplateServer):
             limited=True,
         )
 
+    def _save_history(self) -> None:
+        """Save the current clipboard history to the archive file."""
+        self._clipboard_history.save_to_file(self.archive_file)
+
     async def get_history(self, request: Request) -> GetHistoryResponse:
         """Get clipboard history.
 
@@ -95,9 +97,9 @@ class ClipboardServer(TemplateServer):
         :return GetHistoryResponse: Clipboard history response
         :raise HTTPException: If the server token is not configured
         """
+        logger.info("Retrieving clipboard history, total entries: %d", len(self._clipboard_history.entries))
         return GetHistoryResponse(
             message="Clipboard history retrieved successfully",
-            timestamp=GetHistoryResponse.current_timestamp(),
             history=self._clipboard_history,
         )
 
@@ -114,10 +116,10 @@ class ClipboardServer(TemplateServer):
             content=body.content,
         )
         self._clipboard_history.add_entry(new_entry)
-        self._clipboard_history.save_to_file(self.archive_file)
+        self._save_history()
+        logger.info("Added new clipboard entry with ID: %s", new_entry.id)
         return AddEntryResponse(
             message="Clipboard entry added successfully",
-            timestamp=AddEntryResponse.current_timestamp(),
             id=new_entry.id,
         )
 
@@ -131,11 +133,13 @@ class ClipboardServer(TemplateServer):
         """
         success = self._clipboard_history.delete_entry(entry_id=body.id)
         if not success:
+            logger.warning("Failed to delete clipboard entry with ID: %s - entry not found", body.id)
             raise HTTPException(status_code=ResponseCode.NOT_FOUND, detail="Clipboard entry not found")
-        self._clipboard_history.save_to_file(self.archive_file)
+
+        self._save_history()
+        logger.info("Deleted clipboard entry with ID: %s", body.id)
         return DeleteEntryResponse(
             message="Clipboard entry deleted successfully",
-            timestamp=DeleteEntryResponse.current_timestamp(),
             id=body.id,
         )
 
@@ -153,10 +157,12 @@ class ClipboardServer(TemplateServer):
             content=body.content,
         )
         if not success:
+            logger.warning("Failed to modify clipboard entry with ID: %s - entry not found", body.id)
             raise HTTPException(status_code=ResponseCode.NOT_FOUND, detail="Clipboard entry not found")
-        self._clipboard_history.save_to_file(self.archive_file)
+
+        self._save_history()
+        logger.info("Modified clipboard entry with ID: %s", body.id)
         return ModifyEntryResponse(
             message="Clipboard entry modified successfully",
-            timestamp=ModifyEntryResponse.current_timestamp(),
             id=body.id,
         )
