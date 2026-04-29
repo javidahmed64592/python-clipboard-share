@@ -1,3 +1,5 @@
+archive/
+
 # Static files
 static/*
 !static/.gitkeep
